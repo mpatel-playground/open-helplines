@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mpatel-playground.github.io/open-helplines/schema/country.schema.json",
+  "title": "Open Helplines Country File",
+  "description": "Schema for country helpline files in data/countries/<CC>.json. See CONTRIBUTING.md and scripts/validate.py for semantic merge-gate checks (quote-to-number matching, distinct verified domains, non-future dates, and unique IDs across countries).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["country", "name", "helplines"],
+  "properties": {
+    "country": {
+      "type": "string",
+      "description": "ISO 3166-1 alpha-2 uppercase country code matching the filename (<CC>.json).",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Country name in English.",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "emergency": {
+      "type": "array",
+      "description": "National emergency numbers (e.g., police, ambulance, fire).",
+      "items": {
+        "$ref": "#/$defs/emergencyEntry"
+      }
+    },
+    "helplines": {
+      "type": "array",
+      "description": "List of crisis and support helplines for this country (may be empty).",
+      "items": {
+        "$ref": "#/$defs/helpline"
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes for maintainers or consumers."
+    }
+  },
+  "$defs": {
+    "emergencyEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "sources"],
+      "properties": {
+        "number": {
+          "type": "string",
+          "description": "Emergency number digits (optional leading '+').",
+          "pattern": "^\\+?[0-9]{3,15}$"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "type", "accessed", "quote"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://\\S+$",
+          "description": "HTTPS URL of the page where the number was read."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["government", "operator", "third-party"]
+        },
+        "accessed": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "Date the source page was read (YYYY-MM-DD)."
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "description": "Exact text copied from the source showing the number (separate snippets joined with ' ... ')."
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "value"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["chat", "email", "phone", "sms", "whatsapp"]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display": {
+          "type": "string",
+          "description": "Human-friendly formatting shown to callers."
+        },
+        "keyword": {
+          "type": "string",
+          "description": "SMS keyword to send, if applicable."
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": { "enum": ["phone", "sms", "whatsapp"] }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "pattern": "^\\+?[0-9]{3,15}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "chat" }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://\\S+$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "email" }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "pattern": "^[^@\\s]+@[^@\\s]+$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "helpline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "categories",
+        "audiences",
+        "contacts",
+        "availability",
+        "cost",
+        "sources",
+        "status",
+        "last_verified"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]{2}-[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "Unique lowercase-kebab-case identifier prefixed with the lowercase country code."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "operator": {
+          "type": "string"
+        },
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "child-abuse",
+              "crisis",
+              "domestic-violence",
+              "eating-disorders",
+              "elder-abuse",
+              "gambling",
+              "human-trafficking",
+              "lgbtq",
+              "mental-health",
+              "poison",
+              "sexual-assault",
+              "substance-use",
+              "suicide",
+              "veterans",
+              "youth"
+            ]
+          }
+        },
+        "audiences": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "children",
+              "deaf-hard-of-hearing",
+              "everyone",
+              "indigenous",
+              "lgbtq",
+              "men",
+              "parents",
+              "seniors",
+              "students",
+              "veterans",
+              "women",
+              "youth"
+            ]
+          }
+        },
+        "contacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/contact"
+          }
+        },
+        "availability": {
+          "type": "string",
+          "enum": ["24/7", "limited", "unknown"]
+        },
+        "hours_note": {
+          "type": "string"
+        },
+        "cost": {
+          "type": "string",
+          "enum": ["free", "standard-rates", "unknown"]
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+          }
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://\\S+$"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["provisional", "verified"]
+        },
+        "last_verified": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "if": {
+        "properties": {
+          "status": { "const": "verified" }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "sources": {
+            "minItems": 2
+          }
+        }
+      }
+    }
+  }
+}
