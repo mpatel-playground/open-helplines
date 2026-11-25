@@ -25,7 +25,7 @@ const { helplines } = await res.json();
 const suicideLines = helplines.filter(h => h.categories.includes("suicide"));
 ```
 
-Or just copy `data/countries/*.json`. The data is **CC0**: use it anywhere, no attribution required (though a link back helps people find and fix errors).
+Or just copy `data/countries/*.json` (see the [JSON Schema](schema/country.schema.json) for consumers). The data is **CC0**: use it anywhere, no attribution required (though a link back helps people find and fix errors).
 
 ### What an entry looks like
 
