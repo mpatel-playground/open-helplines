@@ -1,5 +1,7 @@
 # Open Helplines
 
+[![Coverage](https://mpatel-playground.github.io/open-helplines/badge.svg)](https://mpatel-playground.github.io/open-helplines/coverage.md)
+
 **A free, open, source-cited directory of crisis and support helplines for every country, built so any app, website or AI assistant can show the right local number to someone who needs it.**
 
 When a person tells a chatbot, a search box or a support app that they are in crisis, the reply should contain a real, working, *local* number. Today there is no good open dataset for that: lists go stale, and the most complete directories are proprietary. This project fixes that, one country at a time.
@@ -18,6 +20,9 @@ When a person tells a chatbot, a search box or a support app that they are in cr
 | [`/v1/index.json`](https://mpatel-playground.github.io/open-helplines/v1/index.json) | Every country with counts and emergency numbers |
 | [`/v1/countries/GB.json`](https://mpatel-playground.github.io/open-helplines/v1/countries/GB.json) | One country (ISO 3166-1 alpha-2 code) |
 | [`/v1/all.json`](https://mpatel-playground.github.io/open-helplines/v1/all.json) | Everything in one file |
+| [`/v1/badge.json`](https://mpatel-playground.github.io/open-helplines/v1/badge.json) | Shields.io endpoint JSON for coverage counts |
+| [`/coverage.md`](https://mpatel-playground.github.io/open-helplines/coverage.md) | Live per-country coverage table (`verified` vs `provisional`) |
+| [`/badge.svg`](https://mpatel-playground.github.io/open-helplines/badge.svg) | CI-generated SVG coverage badge |
 
 ```js
 const res = await fetch("https://mpatel-playground.github.io/open-helplines/v1/countries/US.json");
@@ -61,7 +66,7 @@ If you are building something for people in crisis, consider showing only `verif
 
 ## Status
 
-Early. A handful of countries are seeded; [most of the world is open for contribution](https://github.com/mpatel-playground/open-helplines/issues?q=is%3Aopen+label%3Acountry-data). See the [map of open tasks](https://github.com/mpatel-playground/open-helplines/issues).
+Early. A handful of countries are seeded; inspect the [live coverage table](https://mpatel-playground.github.io/open-helplines/coverage.md) (`/coverage.md`) and [`/badge.svg`](https://mpatel-playground.github.io/open-helplines/badge.svg) for per-country `verified` vs `provisional` counts. [Most of the world is open for contribution](https://github.com/mpatel-playground/open-helplines/issues?q=is%3Aopen+label%3Acountry-data); see the [map of open tasks](https://github.com/mpatel-playground/open-helplines/issues).
 
 ## Contribute (humans and AI agents both welcome)
 
